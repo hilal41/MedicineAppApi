@@ -1,12 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using MedicineAppApi.Data;
 using MedicineAppApi.Models;
 using MedicineAppApi.DTOs;
+using MedicineAppApi.Repositories.Interfaces;
+using MedicineAppApi.Common.Helpers;
 
 namespace MedicineAppApi.Services
 {
@@ -20,19 +15,18 @@ namespace MedicineAppApi.Services
 
     public class AuthService : IAuthService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthService(ApplicationDbContext context, IConfiguration configuration)
+        public AuthService(IUserRepository userRepository, IConfiguration configuration)
         {
-            _context = context;
+            _userRepository = userRepository;
             _configuration = configuration;
         }
 
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequest)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == loginRequest.Email && u.IsActive);
+            var user = await _userRepository.GetByEmailAsync(loginRequest.Email);
 
             if (user == null)
             {
@@ -43,7 +37,7 @@ namespace MedicineAppApi.Services
                 };
             }
 
-            if (!VerifyPassword(loginRequest.Password, user.Password))
+            if (!PasswordHelper.VerifyPassword(loginRequest.Password, user.Password))
             {
                 return new LoginResponseDto
                 {
@@ -52,7 +46,7 @@ namespace MedicineAppApi.Services
                 };
             }
 
-            var token = GenerateJwtToken(user);
+            var token = JwtHelper.GenerateJwtToken(user, _configuration);
             var userInfo = new UserInfoDto
             {
                 Id = user.Id,
@@ -72,38 +66,17 @@ namespace MedicineAppApi.Services
 
         public string HashPassword(string password)
         {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
+            return PasswordHelper.HashPassword(password);
         }
 
         public bool VerifyPassword(string password, string hashedPassword)
         {
-            var hashedInput = HashPassword(password);
-            return hashedInput == hashedPassword;
+            return PasswordHelper.VerifyPassword(password, hashedPassword);
         }
 
         public string GenerateJwtToken(User user)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "YourSuperSecretKey123!@#"));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"] ?? "MedicineAppApi",
-                audience: _configuration["Jwt:Audience"] ?? "MedicineAppApi",
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(24),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return JwtHelper.GenerateJwtToken(user, _configuration);
         }
     }
 }

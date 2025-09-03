@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MedicineAppApi.Services;
 using MedicineAppApi.DTOs;
-using MedicineAppApi.Data;
 using MedicineAppApi.Models;
+using MedicineAppApi.Repositories.Interfaces;
+using AutoMapper;
 
 namespace MedicineAppApi.Controllers
 {
@@ -12,12 +12,14 @@ namespace MedicineAppApi.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly ApplicationDbContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthService authService, ApplicationDbContext context)
+        public AuthController(IAuthService authService, IUserRepository userRepository, IMapper mapper)
         {
             _authService = authService;
-            _context = context;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -47,8 +49,7 @@ namespace MedicineAppApi.Controllers
             }
 
             // Check if user already exists
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == registerRequest.Email);
-            if (existingUser != null)
+            if (await _userRepository.EmailExistsAsync(registerRequest.Email))
             {
                 return BadRequest(new { Message = "User with this email already exists" });
             }
@@ -64,8 +65,7 @@ namespace MedicineAppApi.Controllers
                 IsActive = true
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _userRepository.AddAsync(user);
 
             // Return login response
             var loginRequest = new LoginRequestDto
