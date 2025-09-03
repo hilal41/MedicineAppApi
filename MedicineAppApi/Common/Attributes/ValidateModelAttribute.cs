@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using MedicineAppApi.Common.Models;
+using MedicineAppApi.Common.Exceptions;
 
 namespace MedicineAppApi.Common.Attributes
 {
@@ -12,12 +12,10 @@ namespace MedicineAppApi.Common.Attributes
             {
                 var errors = context.ModelState
                     .Where(x => x.Value?.Errors.Count > 0)
-                    .SelectMany(x => x.Value!.Errors)
-                    .Select(x => x.ErrorMessage)
+                    .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
                     .ToList();
 
-                var response = ApiResponse.ErrorResult("Validation failed", errors);
-                context.Result = new BadRequestObjectResult(response);
+                throw new ValidationException("One or more validation errors occurred.", errors, "MODEL_VALIDATION_ERROR");
             }
         }
     }

@@ -42,11 +42,24 @@ namespace MedicineAppApi.Common.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IMedicineRepository, MedicineRepository>();
             services.AddScoped<ISupplierMedicineRepository, SupplierMedicineRepository>();
+            services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            services.AddScoped<IInvoiceItemRepository, InvoiceItemRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+            services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+            services.AddScoped<IPurchaseItemRepository, PurchaseItemRepository>();
 
             // Add Services
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
+            services.AddScoped<IStockMovementService, StockMovementService>();
+            services.AddScoped<IPurchaseService, PurchaseService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IReportsService, ReportsService>();
 
             return services;
         }

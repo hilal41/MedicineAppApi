@@ -4,6 +4,7 @@ using MedicineAppApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicineAppApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250903064839_AddInvoiceAndInvoiceItems")]
+    partial class AddInvoiceAndInvoiceItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,35 +54,6 @@ namespace MedicineAppApi.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("MedicineAppApi.Models.Customer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customers");
-                });
-
             modelBuilder.Entity("MedicineAppApi.Models.Invoice", b =>
                 {
                     b.Property<int>("Id")
@@ -94,8 +68,10 @@ namespace MedicineAppApi.Migrations
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -124,8 +100,6 @@ namespace MedicineAppApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
-
-                    b.HasIndex("CustomerId");
 
                     b.HasIndex("InvoiceNo")
                         .IsUnique();
@@ -210,161 +184,6 @@ namespace MedicineAppApi.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Medicines");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Method")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("ReceivedBy")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceivedBy");
-
-                    b.HasIndex("InvoiceId", "Date");
-
-                    b.HasIndex("Method", "Date");
-
-                    b.ToTable("Payments");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.Purchase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("InvoiceNo")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("InvoiceNo")
-                        .IsUnique();
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("Purchases");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.PurchaseItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MedicineId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("PurchaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Qty")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Subtotal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MedicineId");
-
-                    b.HasIndex("PurchaseId");
-
-                    b.ToTable("PurchaseItems");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.StockMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangeQty")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MedicineId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("ReferenceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReferenceType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
-
-                    b.HasIndex("MedicineId", "CreatedAt");
-
-                    b.HasIndex("ReferenceType", "ReferenceId");
-
-                    b.ToTable("StockMovements");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.Supplier", b =>
@@ -480,15 +299,7 @@ namespace MedicineAppApi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MedicineAppApi.Models.Customer", "Customer")
-                        .WithMany("Invoices")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("CreatedByUser");
-
-                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.InvoiceItem", b =>
@@ -521,82 +332,6 @@ namespace MedicineAppApi.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("MedicineAppApi.Models.Payment", b =>
-                {
-                    b.HasOne("MedicineAppApi.Models.Invoice", "Invoice")
-                        .WithMany("Payments")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MedicineAppApi.Models.User", "ReceivedByUser")
-                        .WithMany("Payments")
-                        .HasForeignKey("ReceivedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("ReceivedByUser");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.Purchase", b =>
-                {
-                    b.HasOne("MedicineAppApi.Models.User", "CreatedByUser")
-                        .WithMany("Purchases")
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MedicineAppApi.Models.Supplier", "Supplier")
-                        .WithMany("Purchases")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.PurchaseItem", b =>
-                {
-                    b.HasOne("MedicineAppApi.Models.Medicine", "Medicine")
-                        .WithMany("PurchaseItems")
-                        .HasForeignKey("MedicineId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MedicineAppApi.Models.Purchase", "Purchase")
-                        .WithMany("PurchaseItems")
-                        .HasForeignKey("PurchaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Medicine");
-
-                    b.Navigation("Purchase");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.StockMovement", b =>
-                {
-                    b.HasOne("MedicineAppApi.Models.User", "CreatedByUser")
-                        .WithMany("StockMovements")
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MedicineAppApi.Models.Medicine", "Medicine")
-                        .WithMany("StockMovements")
-                        .HasForeignKey("MedicineId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Medicine");
-                });
-
             modelBuilder.Entity("MedicineAppApi.Models.SupplierMedicine", b =>
                 {
                     b.HasOne("MedicineAppApi.Models.Medicine", "Medicine")
@@ -621,50 +356,26 @@ namespace MedicineAppApi.Migrations
                     b.Navigation("Medicines");
                 });
 
-            modelBuilder.Entity("MedicineAppApi.Models.Customer", b =>
-                {
-                    b.Navigation("Invoices");
-                });
-
             modelBuilder.Entity("MedicineAppApi.Models.Invoice", b =>
                 {
                     b.Navigation("InvoiceItems");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.Medicine", b =>
                 {
                     b.Navigation("InvoiceItems");
 
-                    b.Navigation("PurchaseItems");
-
-                    b.Navigation("StockMovements");
-
                     b.Navigation("SupplierMedicines");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.Purchase", b =>
-                {
-                    b.Navigation("PurchaseItems");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.Supplier", b =>
                 {
-                    b.Navigation("Purchases");
-
                     b.Navigation("SupplierMedicines");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.User", b =>
                 {
                     b.Navigation("Invoices");
-
-                    b.Navigation("Payments");
-
-                    b.Navigation("Purchases");
-
-                    b.Navigation("StockMovements");
                 });
 #pragma warning restore 612, 618
         }

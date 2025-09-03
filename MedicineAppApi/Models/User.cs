@@ -18,5 +18,11 @@ namespace MedicineAppApi.Models
         public string LastName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
+        
+        // Navigation properties
+        public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public virtual ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
+        public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

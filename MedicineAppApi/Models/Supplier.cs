@@ -21,5 +21,6 @@ namespace MedicineAppApi.Models
         
         // Navigation properties
         public virtual ICollection<SupplierMedicine> SupplierMedicines { get; set; } = new List<SupplierMedicine>();
+        public virtual ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
     }
 }

@@ -2,6 +2,7 @@ using MedicineAppApi.Models;
 using MedicineAppApi.DTOs;
 using MedicineAppApi.Repositories.Interfaces;
 using MedicineAppApi.Common.Helpers;
+using MedicineAppApi.Common.Exceptions;
 
 namespace MedicineAppApi.Services
 {
@@ -30,20 +31,12 @@ namespace MedicineAppApi.Services
 
             if (user == null)
             {
-                return new LoginResponseDto
-                {
-                    Success = false,
-                    Message = "Invalid email or password"
-                };
+                throw new UnauthorizedException("Invalid email or password", "INVALID_CREDENTIALS");
             }
 
             if (!PasswordHelper.VerifyPassword(loginRequest.Password, user.Password))
             {
-                return new LoginResponseDto
-                {
-                    Success = false,
-                    Message = "Invalid email or password"
-                };
+                throw new UnauthorizedException("Invalid email or password", "INVALID_CREDENTIALS");
             }
 
             var token = JwtHelper.GenerateJwtToken(user, _configuration);

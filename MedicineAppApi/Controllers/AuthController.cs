@@ -3,6 +3,7 @@ using MedicineAppApi.Services;
 using MedicineAppApi.DTOs;
 using MedicineAppApi.Models;
 using MedicineAppApi.Repositories.Interfaces;
+using MedicineAppApi.Common.Exceptions;
 using AutoMapper;
 
 namespace MedicineAppApi.Controllers
@@ -31,12 +32,6 @@ namespace MedicineAppApi.Controllers
             }
 
             var result = await _authService.LoginAsync(loginRequest);
-
-            if (!result.Success)
-            {
-                return Unauthorized(result);
-            }
-
             return Ok(result);
         }
 
@@ -51,7 +46,7 @@ namespace MedicineAppApi.Controllers
             // Check if user already exists
             if (await _userRepository.EmailExistsAsync(registerRequest.Email))
             {
-                return BadRequest(new { Message = "User with this email already exists" });
+                throw new DuplicateException("User", "email", registerRequest.Email, "USER_ALREADY_EXISTS");
             }
 
             // Create new user

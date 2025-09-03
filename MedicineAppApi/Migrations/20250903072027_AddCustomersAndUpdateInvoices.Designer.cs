@@ -4,6 +4,7 @@ using MedicineAppApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicineAppApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250903072027_AddCustomersAndUpdateInvoices")]
+    partial class AddCustomersAndUpdateInvoices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,45 +213,6 @@ namespace MedicineAppApi.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Medicines");
-                });
-
-            modelBuilder.Entity("MedicineAppApi.Models.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Method")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("ReceivedBy")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceivedBy");
-
-                    b.HasIndex("InvoiceId", "Date");
-
-                    b.HasIndex("Method", "Date");
-
-                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.Purchase", b =>
@@ -521,25 +485,6 @@ namespace MedicineAppApi.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("MedicineAppApi.Models.Payment", b =>
-                {
-                    b.HasOne("MedicineAppApi.Models.Invoice", "Invoice")
-                        .WithMany("Payments")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MedicineAppApi.Models.User", "ReceivedByUser")
-                        .WithMany("Payments")
-                        .HasForeignKey("ReceivedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("ReceivedByUser");
-                });
-
             modelBuilder.Entity("MedicineAppApi.Models.Purchase", b =>
                 {
                     b.HasOne("MedicineAppApi.Models.User", "CreatedByUser")
@@ -629,8 +574,6 @@ namespace MedicineAppApi.Migrations
             modelBuilder.Entity("MedicineAppApi.Models.Invoice", b =>
                 {
                     b.Navigation("InvoiceItems");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("MedicineAppApi.Models.Medicine", b =>
@@ -659,8 +602,6 @@ namespace MedicineAppApi.Migrations
             modelBuilder.Entity("MedicineAppApi.Models.User", b =>
                 {
                     b.Navigation("Invoices");
-
-                    b.Navigation("Payments");
 
                     b.Navigation("Purchases");
 

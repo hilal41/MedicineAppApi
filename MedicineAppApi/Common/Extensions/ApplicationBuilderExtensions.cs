@@ -1,27 +1,26 @@
+using MedicineAppApi.Common.Middleware;
+using Microsoft.AspNetCore.Builder;
+
 namespace MedicineAppApi.Common.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseApplicationMiddleware(this IApplicationBuilder app, IWebHostEnvironment env)
+        public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder app)
         {
-            // Configure the HTTP request pipeline.
-            if (env.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            return app;
+            return app.UseMiddleware<GlobalExceptionHandler>();
         }
 
-        public static IEndpointRouteBuilder UseApplicationEndpoints(this IEndpointRouteBuilder endpoints)
+        public static IApplicationBuilder UseValidationErrorHandler(this IApplicationBuilder app)
         {
-            endpoints.MapControllers();
-            return endpoints;
+            return app.UseMiddleware<ValidationErrorHandler>();
+        }
+
+        public static IApplicationBuilder UseApplicationEndpoints(this IApplicationBuilder app)
+        {
+            return app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

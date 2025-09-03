@@ -1,29 +1,27 @@
+using System.Net;
+
 namespace MedicineAppApi.Common.Exceptions
 {
     public class AppException : Exception
     {
-        public AppException() : base() { }
-        public AppException(string message) : base(message) { }
-        public AppException(string message, Exception innerException) : base(message, innerException) { }
-    }
+        public HttpStatusCode StatusCode { get; set; }
+        public string ErrorCode { get; set; }
+        public object? AdditionalData { get; set; }
 
-    public class NotFoundException : AppException
-    {
-        public NotFoundException(string message = "Resource not found") : base(message) { }
-    }
+        public AppException(string message, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string errorCode = "GENERAL_ERROR", object? additionalData = null)
+            : base(message)
+        {
+            StatusCode = statusCode;
+            ErrorCode = errorCode;
+            AdditionalData = additionalData;
+        }
 
-    public class UnauthorizedException : AppException
-    {
-        public UnauthorizedException(string message = "Unauthorized access") : base(message) { }
-    }
-
-    public class ValidationException : AppException
-    {
-        public ValidationException(string message = "Validation failed") : base(message) { }
-    }
-
-    public class DuplicateException : AppException
-    {
-        public DuplicateException(string message = "Resource already exists") : base(message) { }
+        public AppException(string message, Exception innerException, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, string errorCode = "GENERAL_ERROR", object? additionalData = null)
+            : base(message, innerException)
+        {
+            StatusCode = statusCode;
+            ErrorCode = errorCode;
+            AdditionalData = additionalData;
+        }
     }
 }
