@@ -42,6 +42,8 @@ namespace MedicineAppApi.Common.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<IMedicineRepository, MedicineRepository>();
+            services.AddScoped<ISupplierMedicineRepository, SupplierMedicineRepository>();
 
             // Add Services
             services.AddScoped<IAuthService, AuthService>();

@@ -18,5 +18,8 @@ namespace MedicineAppApi.Models
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        
+        // Navigation properties
+        public virtual ICollection<SupplierMedicine> SupplierMedicines { get; set; } = new List<SupplierMedicine>();
     }
 }
